@@ -1,6 +1,7 @@
 import psutil
 import platform
 import shutil
+from pathlib import Path
 
 class SystemMonitor:
     @staticmethod
@@ -9,7 +10,7 @@ class SystemMonitor:
         mem = psutil.virtual_memory()
         
         # Disk Usage (where the app runs)
-        du = shutil.disk_usage(".")
+        du = shutil.disk_usage(str(Path.home()))
         
         # CPU Usage
         cpu_percent = psutil.cpu_percent(interval=None)

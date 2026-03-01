@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-14   # ARM64 (Apple Silicon) runner — required for MLX
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Node.js ---
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        run: |
+          npm ci
+          cd src/renderer && npm ci
+
+      # --- Python ---
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/pip
+          key: macos-pip-${{ hashFiles('backend/pyproject.toml') }}
+          restore-keys: macos-pip-
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pyinstaller
+          python -m spacy download en_core_web_sm
+
+      # --- Build ---
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build backend (PyInstaller)
+        working-directory: backend
+        run: |
+          source .venv/bin/activate
+          python -m PyInstaller spec/silicon_server.spec --clean --noconfirm
+
+      - name: Package DMG
+        run: npx electron-builder build --mac --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- Extract version from tag ---
+      - name: Get version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      # --- Release ---
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: SiliconDev ${{ steps.version.outputs.tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release/*.dmg
+            release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

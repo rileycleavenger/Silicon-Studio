@@ -1,5 +1,12 @@
 [
     {
+        "id": "mlx-community/Qwen3-0.6B-4bit",
+        "name": "Qwen 3 0.6B (4-bit)",
+        "size": "0.4GB",
+        "family": "Qwen",
+        "url": "https://huggingface.co/mlx-community/Qwen3-0.6B-4bit"
+    },
+    {
         "id": "mlx-community/Llama-4-Scout-17B-16E-Instruct-4bit",
         "name": "Llama 4 Scout 17B (4-bit)",
         "size": "10.5GB",

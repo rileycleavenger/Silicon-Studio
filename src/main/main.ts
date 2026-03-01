@@ -12,11 +12,22 @@ function startBackend() {
     let args: string[] = [];
 
     if (isDev) {
-        // In development, run the python script directly
-        // Assuming we are running from the project root
-        command = 'python3';
+        // In development, handle virtual environments robustly
         scriptPath = path.join(__dirname, '../../backend/main.py');
-        args = [scriptPath];
+        const venvPythonPath = path.join(__dirname, '../../backend/.venv/bin/python');
+
+        // If we are already in an activated environment (conda or venv), use python directly.
+        // Otherwise, attempt to run via the expected conda environment or local venv.
+        if (process.env.VIRTUAL_ENV || process.env.CONDA_PREFIX || process.env.PYTHON_EXECUTABLE) {
+            command = process.env.PYTHON_EXECUTABLE || 'python';
+            args = [scriptPath];
+        } else if (fs.existsSync(venvPythonPath)) {
+            command = venvPythonPath;
+            args = [scriptPath];
+        } else {
+            command = 'conda';
+            args = ['run', '-n', 'silicon-studio', '--no-capture-output', 'python', scriptPath];
+        }
         console.log('Starting backend in DEV mode:', command, args);
     } else {
         // In production, run the bundled executable
@@ -95,7 +106,8 @@ function createWindow() {
     // Load the Vite dev server URL in development, or the local index.html in production
     const isDev = !app.isPackaged;
     if (isDev) {
-        mainWindow.loadURL('http://localhost:5173');
+        const devServerUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+        mainWindow.loadURL(devServerUrl);
         // mainWindow.webContents.openDevTools({ mode: 'detach' });
     } else {
         // In production, the file structure is:
@@ -109,7 +121,13 @@ app.whenReady().then(() => {
     // Start the Python Backend
     startBackend();
 
-    ipcMain.handle('dialog:openFile', async () => {
+    ipcMain.handle('dialog:openFile', async (event) => {
+        // Basic IPC validation: ensure the request comes from our main window frame
+        if (!event.senderFrame) {
+            console.warn('Blocked unauthorized dialog:openFile request');
+            return null;
+        }
+
         const result = await dialog.showOpenDialog({
             properties: ['openFile'],
             filters: [{ name: 'CSV/JSONL', extensions: ['csv', 'jsonl', 'json'] }]
@@ -118,7 +136,12 @@ app.whenReady().then(() => {
         return result.filePaths[0];
     });
 
-    ipcMain.handle('dialog:openDirectory', async () => {
+    ipcMain.handle('dialog:openDirectory', async (event) => {
+        if (!event.senderFrame) {
+            console.warn('Blocked unauthorized dialog:openDirectory request');
+            return null;
+        }
+
         const result = await dialog.showOpenDialog({
             properties: ['openDirectory']
         });

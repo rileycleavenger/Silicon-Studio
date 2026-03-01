@@ -4,7 +4,8 @@
 
 :root {
   --sidebar-bg: rgba(40, 40, 40, 0.9);
-  --window-bg: rgba(30, 30, 30, 0.5); /* Translucent */
+  --window-bg: rgba(30, 30, 30, 0.5);
+  /* Translucent */
 }
 
 body {
@@ -12,27 +13,120 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* App-like feel */
-  -webkit-user-select: none; /* Disable text selection mostly */
+  overflow: hidden;
+  /* App-like feel — buttons/nav are unselectable, content areas opt in */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection in content areas */
+.prose, .select-text, textarea, input, pre, code,
+.editor-container .CodeMirror {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Beautiful Selection Color */
+::selection {
+  background: rgba(59, 130, 246, 0.5);
+  /* Blue-500/50 */
+  color: white;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-600 rounded-full;
-  border: 2px solid transparent;
-  background-clip: content-box;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Hide default summary marker for custom details */
+summary.list-none::-webkit-details-marker { display: none; }
+
+/* Rotate chevron when details is open */
+details[open] > summary .chevron-rotate { transform: rotate(90deg); }
+
+/* Dark select dropdown */
+select option {
+  background: #1a1a1a;
+  color: #e5e7eb;
 }
 
 /* Drag Region for Titlebar */
 .drag-region {
   -webkit-app-region: drag;
 }
+
 .no-drag {
   -webkit-app-region: no-drag;
+}
+
+/* EasyMDE Dark Mode Overrides */
+.editor-container .CodeMirror {
+  background: transparent !important;
+  color: #e5e7eb !important;
+  border: none !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  padding: 20px !important;
+}
+
+.editor-container .CodeMirror-cursor {
+  border-left: 2px solid #3b82f6 !important;
+}
+
+.editor-container .editor-preview-active-side {
+  background: #0e0e10 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e5e7eb !important;
+}
+
+.editor-container .editor-toolbar {
+  display: none !important;
+  /* Managed by our custom toolbar */
+}
+
+.editor-container .cm-header-1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+}
+
+.editor-container .cm-header-2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #f3f4f6;
+}
+
+.editor-container .cm-comment {
+  color: #6b7280;
+}
+
+.editor-container .cm-keyword {
+  color: #818cf8;
+}
+
+.editor-container .cm-string {
+  color: #34d399;
+}
+
+.editor-container .cm-variable {
+  color: #60a5fa;
 }

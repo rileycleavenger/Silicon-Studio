@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f0f1a"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="trace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <linearGradient id="dot" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- Chip body -->
+  <rect x="302" y="302" width="420" height="420" rx="48" fill="url(#chip)" opacity="0.15" stroke="url(#chip)" stroke-width="6"/>
+
+  <!-- Pins — top -->
+  <rect x="390" y="222" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="460" y="222" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="530" y="222" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="600" y="222" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+
+  <!-- Pins — bottom -->
+  <rect x="390" y="706" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="460" y="706" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="530" y="706" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="600" y="706" width="16" height="96" rx="8" fill="url(#trace)" opacity="0.7"/>
+
+  <!-- Pins — left -->
+  <rect x="222" y="390" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="222" y="460" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="222" y="530" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="222" y="600" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+
+  <!-- Pins — right -->
+  <rect x="706" y="390" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="706" y="460" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="706" y="530" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+  <rect x="706" y="600" width="96" height="16" rx="8" fill="url(#trace)" opacity="0.7"/>
+
+  <!-- Inner traces — circuit pattern -->
+  <!-- Horizontal traces -->
+  <line x1="380" y1="440" x2="512" y2="440" stroke="url(#trace)" stroke-width="4" opacity="0.5"/>
+  <line x1="512" y1="440" x2="644" y2="440" stroke="url(#trace)" stroke-width="4" opacity="0.35"/>
+  <line x1="380" y1="512" x2="512" y2="512" stroke="url(#trace)" stroke-width="4" opacity="0.35"/>
+  <line x1="512" y1="512" x2="644" y2="512" stroke="url(#trace)" stroke-width="4" opacity="0.5"/>
+  <line x1="380" y1="584" x2="512" y2="584" stroke="url(#trace)" stroke-width="4" opacity="0.5"/>
+  <line x1="512" y1="584" x2="644" y2="584" stroke="url(#trace)" stroke-width="4" opacity="0.35"/>
+
+  <!-- Vertical traces -->
+  <line x1="440" y1="380" x2="440" y2="512" stroke="url(#trace)" stroke-width="4" opacity="0.35"/>
+  <line x1="440" y1="512" x2="440" y2="644" stroke="url(#trace)" stroke-width="4" opacity="0.5"/>
+  <line x1="512" y1="380" x2="512" y2="644" stroke="url(#trace)" stroke-width="4" opacity="0.4"/>
+  <line x1="584" y1="380" x2="584" y2="512" stroke="url(#trace)" stroke-width="4" opacity="0.5"/>
+  <line x1="584" y1="512" x2="584" y2="644" stroke="url(#trace)" stroke-width="4" opacity="0.35"/>
+
+  <!-- Diagonal traces -->
+  <line x1="440" y1="440" x2="512" y2="512" stroke="url(#trace)" stroke-width="3" opacity="0.3"/>
+  <line x1="584" y1="440" x2="512" y2="512" stroke="url(#trace)" stroke-width="3" opacity="0.3"/>
+  <line x1="440" y1="584" x2="512" y2="512" stroke="url(#trace)" stroke-width="3" opacity="0.3"/>
+  <line x1="584" y1="584" x2="512" y2="512" stroke="url(#trace)" stroke-width="3" opacity="0.3"/>
+
+  <!-- Intersection dots — grid nodes -->
+  <!-- Row 1 -->
+  <circle cx="440" cy="440" r="10" fill="url(#dot)" opacity="0.9"/>
+  <circle cx="512" cy="440" r="8" fill="url(#dot)" opacity="0.7"/>
+  <circle cx="584" cy="440" r="10" fill="url(#dot)" opacity="0.9"/>
+
+  <!-- Row 2 — center -->
+  <circle cx="380" cy="512" r="7" fill="url(#dot)" opacity="0.5"/>
+  <circle cx="440" cy="512" r="8" fill="url(#dot)" opacity="0.7"/>
+  <circle cx="512" cy="512" r="14" fill="url(#dot)"/>
+  <circle cx="584" cy="512" r="8" fill="url(#dot)" opacity="0.7"/>
+  <circle cx="644" cy="512" r="7" fill="url(#dot)" opacity="0.5"/>
+
+  <!-- Row 3 -->
+  <circle cx="440" cy="584" r="10" fill="url(#dot)" opacity="0.9"/>
+  <circle cx="512" cy="584" r="8" fill="url(#dot)" opacity="0.7"/>
+  <circle cx="584" cy="584" r="10" fill="url(#dot)" opacity="0.9"/>
+
+  <!-- Extra small dots at extremes -->
+  <circle cx="380" cy="440" r="5" fill="url(#dot)" opacity="0.4"/>
+  <circle cx="644" cy="440" r="5" fill="url(#dot)" opacity="0.4"/>
+  <circle cx="380" cy="584" r="5" fill="url(#dot)" opacity="0.4"/>
+  <circle cx="644" cy="584" r="5" fill="url(#dot)" opacity="0.4"/>
+
+  <!-- Center glow -->
+  <circle cx="512" cy="512" r="6" fill="white" opacity="0.6"/>
+</svg>

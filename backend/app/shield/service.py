@@ -1,96 +1,67 @@
 from presidio_analyzer import AnalyzerEngine, Registry
 from presidio_anonymizer import AnonymizerEngine
 from typing import List, Dict
+import logging
 import spacy
+
+logger = logging.getLogger(__name__)
 
 class PIIShieldService:
     def __init__(self):
-        # Initialize engines once (heavy model load)
-        print("DEBUG: Initializing PIIShieldService...", flush=True)
+        logger.info("Initializing PIIShieldService...")
         try:
-            # PROD FIX: Explicitly load the bundled spacy model
-            # This works better with PyInstaller than relying on string names
-            nlp = None
             nlp = None
             try:
-                # 1. Try importing as module (standard)
                 import en_core_web_sm
-                print("DEBUG: Found en_core_web_sm module, loading...", flush=True)
+                logger.debug("Found en_core_web_sm module, loading...")
                 nlp = en_core_web_sm.load()
             except Exception as e1:
-                print(f"DEBUG: module load failed: {e1}", flush=True)
-                # 2. Try loading from sys._MEIPASS (PyInstaller)
+                logger.debug(f"Module load failed: {e1}")
                 import sys
                 import os
                 if getattr(sys, 'frozen', False):
                     try:
                         base_path = sys._MEIPASS
-                        # Check likely locations
-                        paths = [
-                            os.path.join(base_path, "en_core_web_sm"),
-                            os.path.join(base_path, "en_core_web_sm", "en_core_web_sm-" + "3.7.1"), # approximate version?
-                        ]
-                        # Also check if it was collected into the root
                         model_path = os.path.join(base_path, "en_core_web_sm")
                         if os.path.exists(model_path):
-                             print(f"DEBUG: Loading from frozen path: {model_path}", flush=True)
+                             logger.debug(f"Loading from frozen path: {model_path}")
                              nlp = spacy.load(model_path)
                         else:
-                             # Try typical site-packages structure if collected entirely
-                             # But collect_all usually puts it in root.
-                             # Let's try spacy.load("en_core_web_sm") again but maybe it needs context?
-                             print(f"DEBUG: Model path not found at {model_path}, trying spacy.load('en_core_web_sm')", flush=True)
+                             logger.debug(f"Model path not found at {model_path}, trying spacy.load")
                              nlp = spacy.load("en_core_web_sm")
                     except Exception as e2:
-                         print(f"DEBUG: Frozen load failed: {e2}", flush=True)
+                         logger.debug(f"Frozen load failed: {e2}")
 
             if nlp is None:
-                 # 3. Last ditch: try loading generic 'en' using spacy
                  try:
                     nlp = spacy.load("en_core_web_sm")
                  except Exception as e3:
-                    print(f"DEBUG: All load attempts failed. Last error: {e3}", flush=True)
-            
+                    logger.warning(f"All spacy load attempts failed. Last error: {e3}")
+
             if nlp:
-                 print("DEBUG: Spacy NLP model loaded successfully.", flush=True)
-                 # Create a registry with this specific NLP engine
+                 logger.info("Spacy NLP model loaded successfully.")
                  from presidio_analyzer.nlp_engine import NlpEngineProvider
-                 
-                 # Configure Presidio to use this nlp object? 
-                 # Actually Presidio expects a config to create the engine.
-                 # But we can inject the nlp object if we subclass or use internal APIs.
-                 # EASIER: register it?
-                 
-                 # Official Presidio way with custom model:
+
                  conf_file = {
                     "nlp_engine_name": "spacy",
                     "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}]
                  }
-                 # But we need to ensure 'en_core_web_sm' is linkable.
-                 # If 'en_core_web_sm' is imported as a module, spacy.load('en_core_web_sm') works IF listed in metadata.
-                 
-                 # Force the loaded nlp into spacy's util cache if needed?
-                 # No, AnalyzerEngine defaults to NlpEngineProvider(conf_file).create_engine()
-                 
+
                  provider = NlpEngineProvider(nlp_configuration=conf_file)
                  nlp_engine = provider.create_engine()
-                 
+
                  self.analyzer = AnalyzerEngine(nlp_engine=nlp_engine)
-                 print("DEBUG: AnalyzerEngine initialized with custom config.", flush=True)
-                 
+                 logger.info("AnalyzerEngine initialized.")
+
             else:
-                 # Fallback to default (might crash if model missing)
-                 print("WARNING: No NLP model loaded. PIIShield will likely fail.", flush=True)
-                 self.analyzer = AnalyzerEngine() 
-                 
+                 logger.warning("No NLP model loaded. PIIShield will likely fail.")
+                 self.analyzer = AnalyzerEngine()
+
             self.anonymizer = AnonymizerEngine()
-            print("DEBUG: PIIShieldService fully initialized.", flush=True)
-            
+            logger.info("PIIShieldService fully initialized.")
+
         except Exception as e:
-            print(f"CRITICAL: Failed to init PIIShieldService: {e}", flush=True)
-            import traceback
-            traceback.print_exc()
-            # Don't crash the whole app, but PII will fail
+            logger.error(f"Failed to init PIIShieldService: {e}", exc_info=True)
             self.analyzer = None
             self.anonymizer = None
 
